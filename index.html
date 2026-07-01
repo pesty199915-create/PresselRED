@@ -147,7 +147,13 @@
             box-shadow: 0 0 40px rgba(185, 28, 28, 0.4);
         }
 
-        /* Scrollbar estilizada e visível */
+        /* Container do carousel com indicadores */
+        .carousel-wrapper {
+            position: relative;
+            padding: 0 16px;
+            margin-top: -24px;
+        }
+
         .carousel-container {
             display: flex;
             gap: 16px;
@@ -156,8 +162,10 @@
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             cursor: grab;
+            scroll-behavior: smooth;
         }
 
+        /* Barra de rolagem estilizada */
         .carousel-container::-webkit-scrollbar {
             height: 8px;
         }
@@ -180,6 +188,98 @@
             flex: none;
             width: 288px;
             scroll-snap-align: center;
+        }
+
+        /* SETA INDICADORA - DIREITA */
+        .scroll-indicator-right {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #ffffff;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+            animation: bounceRight 2s infinite;
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.2);
+        }
+
+        .scroll-indicator-right:hover {
+            background: rgba(220, 38, 38, 0.8);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* SETA INDICADORA - ESQUERDA (aparece quando rola) */
+        .scroll-indicator-left {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #ffffff;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.2);
+        }
+
+        .scroll-indicator-left:hover {
+            background: rgba(220, 38, 38, 0.8);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .scroll-indicator-left.show {
+            display: flex;
+        }
+
+        /* TEXTO INDICADOR "ARRASTE PARA O LADO" */
+        .drag-hint {
+            text-align: center;
+            color: #71717a;
+            font-size: 12px;
+            margin-top: -8px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            animation: pulseText 2s infinite;
+        }
+
+        .drag-hint span {
+            display: inline-block;
+            animation: handMove 1.5s infinite;
+        }
+
+        @keyframes bounceRight {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(6px); }
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes handMove {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(6px); }
         }
 
         .telegram-badge {
@@ -283,9 +383,20 @@
             </div>
         </section>
 
-        <!-- VIDEOS COM BARRA DE ROLAGEM VISÍVEL -->
-        <section style="padding:0 16px;margin-top:-24px;">
-            <div class="carousel-container">
+        <!-- VIDEOS COM INDICADORES DE ROLAGEM -->
+        <div class="carousel-wrapper">
+            <!-- TEXTO INDICADOR -->
+            <div class="drag-hint">
+                👆 <span>Arraste para o lado →</span> 👆
+            </div>
+
+            <!-- SETA ESQUERDA (aparece quando rola) -->
+            <div class="scroll-indicator-left" id="scrollLeft" onclick="scrollCarousel(-1)">
+                ◀
+            </div>
+
+            <!-- CAROUSEL -->
+            <div class="carousel-container" id="carouselContainer">
                 <div class="carousel-item">
                     <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
                         <video src="https://guiadosbeneficiarios.com/05.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
@@ -332,7 +443,12 @@
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- SETA DIREITA (sempre visível) -->
+            <div class="scroll-indicator-right" id="scrollRight" onclick="scrollCarousel(1)">
+                ▶
+            </div>
+        </div>
 
         <!-- OFERTA COM TELEGRAM -->
         <div style="padding:0 24px;margin-top:16px;">
@@ -408,6 +524,73 @@
     <footer style="text-align:center;padding:40px 0;color:#52525b;font-size:11px;">
         <p>© 2026 Daark Kwai • Conteúdo apenas para maiores de 18 anos</p>
     </footer>
+
+    <script>
+        // Controle das setas e indicadores de rolagem
+        const container = document.getElementById('carouselContainer');
+        const leftArrow = document.getElementById('scrollLeft');
+        const rightArrow = document.getElementById('scrollRight');
+
+        // Função para rolar o carousel
+        function scrollCarousel(direction) {
+            const scrollAmount = 304; // Largura do item + gap
+            container.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+
+        // Verifica se deve mostrar a seta esquerda
+        function checkScroll() {
+            if (container.scrollLeft > 20) {
+                leftArrow.classList.add('show');
+            } else {
+                leftArrow.classList.remove('show');
+            }
+
+            // Esconde a seta direita se chegou no fim
+            if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+                rightArrow.style.opacity = '0.3';
+                rightArrow.style.cursor = 'default';
+            } else {
+                rightArrow.style.opacity = '1';
+                rightArrow.style.cursor = 'pointer';
+            }
+        }
+
+        // Verifica ao rolar
+        container.addEventListener('scroll', checkScroll);
+
+        // Verifica ao carregar
+        setTimeout(checkScroll, 100);
+
+        // Também verifica ao redimensionar
+        window.addEventListener('resize', checkScroll);
+
+        // Fecha o texto indicador depois de alguns segundos ou quando o usuário interagir
+        setTimeout(() => {
+            const hint = document.querySelector('.drag-hint');
+            if (hint) {
+                hint.style.transition = 'opacity 1s';
+                hint.style.opacity = '0';
+                setTimeout(() => {
+                    hint.style.display = 'none';
+                }, 1000);
+            }
+        }, 6000);
+
+        // Se o usuário interagir com o carousel, some o texto mais rápido
+        container.addEventListener('scroll', () => {
+            const hint = document.querySelector('.drag-hint');
+            if (hint && hint.style.opacity !== '0') {
+                hint.style.transition = 'opacity 0.5s';
+                hint.style.opacity = '0';
+                setTimeout(() => {
+                    hint.style.display = 'none';
+                }, 500);
+            }
+        }, { once: true });
+    </script>
 
 </body>
 </html>
