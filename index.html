@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Exclusivo</title>
+    
+    <!-- ==================== PIXEL UTMIFY (carregado, mas NÃO dispara automático) ==================== -->
+    <script>
+        window.kwaiPixelId = "6a4180ad5ca7593908dda95b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-kwai.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- ==================== PRESSEL - CAPTURA COMPLETA DE UTMs ==================== -->
+    <script>
+    (function() {
+        // Captura todos os parâmetros da URL
+        var urlParams = new URLSearchParams(window.location.search);
+        
+        // Lista completa de parâmetros
+        var paramKeys = [
+            'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+            'utm_id', 'fbclid', 'gclid', 'click_id', 'kwai_click_id', 'msclkid',
+            'ttclid', '_fbp', '_fbc', 'kwai_id', 'kwai_campaign', 'kwai_adset',
+            'kwai_ad', 'sck', 'xcod', 'cv', 'salesCode', 'source', 'medium',
+            'campaign', 'content', 'term', 'apx', 'pixel_id'
+        ];
+        
+        var capturedParams = {};
+        var hasParams = false;
+        
+        // Captura todos os parâmetros
+        paramKeys.forEach(function(key) {
+            var value = urlParams.get(key);
+            if (value) {
+                capturedParams[key] = value;
+                hasParams = true;
+            }
+        });
+        
+        // Extrai pixel_id do utm_content (formato ::)
+        if (capturedParams.utm_content) {
+            var parts = capturedParams.utm_content.split('::');
+            if (parts.length === 3) {
+                if (!capturedParams.pixel_id) {
+                    capturedParams.pixel_id = parts[2];
+                    hasParams = true;
+                }
+                if (!capturedParams.click_id && !capturedParams.kwai_click_id) {
+                    capturedParams.click_id = parts[1];
+                    hasParams = true;
+                }
+            }
+        }
+        
+        // Salva no sessionStorage
+        try {
+            var existing = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
+            Object.keys(capturedParams).forEach(function(key) {
+                existing[key] = capturedParams[key];
+            });
+            sessionStorage.setItem('pressel_utms', JSON.stringify(existing));
+            capturedParams = existing;
+        } catch(e) {}
+        
+        // Função para construir URL com parâmetros
+        function buildRedirectUrl(baseUrl) {
+            try {
+                var url = new URL(baseUrl);
+                Object.keys(capturedParams).forEach(function(key) {
+                    if (!url.searchParams.has(key)) {
+                        url.searchParams.set(key, capturedParams[key]);
+                    }
+                });
+                return url.toString();
+            } catch(e) {
+                return baseUrl;
+            }
+        }
+        
+        var DESTINATION_URL = 'https://paylume.fans/l/c0786cde?shk=ge9wtxd9';
+        
+        if (hasParams) {
+            console.log('📊 Parâmetros capturados pela Pressel:', capturedParams);
+            console.log('🔗 URL final:', buildRedirectUrl(DESTINATION_URL));
+        }
+        
+        // Função de redirecionamento + disparo do evento
+        window.redirectWithParams = function() {
+            // 🔥 DISPARA O EVENTO CONTENT VIEW SOMENTE AQUI (no clique)
+            if (typeof window.kwaiPixel !== 'undefined') {
+                try {
+                    window.kwaiPixel('track', 'ViewContent', {
+                        content_name: 'Acesso Exclusivo Telegram',
+                        content_category: 'Conteúdo Premium',
+                        value: 0.01,
+                        currency: 'BRL'
+                    });
+                    console.log('✅ Evento ViewContent disparado pelo clique');
+                } catch(e) {
+                    console.log('⚠️ Erro ao disparar evento:', e);
+                }
+            } else {
+                // Fallback: tenta via UTMify global
+                if (typeof window.utmify !== 'undefined') {
+                    try {
+                        window.utmify('track', 'ViewContent');
+                        console.log('✅ Evento ViewContent disparado via UTMify');
+                    } catch(e) {}
+                }
+            }
+            
+            // Redireciona após pequeno delay
+            setTimeout(function() {
+                var currentUrl = buildRedirectUrl(DESTINATION_URL);
+                window.location.href = currentUrl;
+            }, 300);
+        };
+    })();
+    </script>
+    <!-- ==================== FIM DO SCRIPT PRESSEL ==================== -->
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(180deg, #0a0a0a, #1a0000);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.4);
+        }
+
+        /* Scrollbar escondida */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .telegram-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 136, 204, 0.15);
+            border: 1px solid rgba(0, 136, 204, 0.3);
+            border-radius: 30px;
+            padding: 4px 14px;
+            font-size: 11px;
+            color: #4fc3f7;
+            margin-top: 8px;
+        }
+
+        .telegram-badge img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .telegram-required {
+            background: rgba(0, 136, 204, 0.08);
+            border-left: 3px solid #0088cc;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-top: 12px;
+            text-align: left;
+            font-size: 13px;
+            color: #b0bec5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .telegram-required strong {
+            color: #4fc3f7;
+        }
+
+        .btn-telegram {
+            background: linear-gradient(90deg, #0088cc, #00aaff);
+            transition: 0.3s;
+        }
+
+        .btn-telegram:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 136, 204, 0.4);
+        }
+
+        .btn-telegram::after {
+            content: ' 📱';
+        }
+
+        .btn-white-telegram::after {
+            content: ' 📱';
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header style="position:sticky;top:0;z-index:50;background:rgba(0,0,0,0.9);backdrop-filter:blur(16px);border-bottom:1px solid #3b0a0a;padding:12px 0;">
+        <div style="max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:36px;height:36px;background:linear-gradient(135deg,#dc2626,#991b1b);border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;">DV</div>
+                <div>
+                    <span style="font-size:22px;font-weight:900;letter-spacing:-0.05em;">Daark</span>
+                    <span style="font-size:22px;font-weight:900;letter-spacing:-0.05em;color:#dc2626;">Kwai 😈</span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;">
+                <div style="padding:4px 12px;background:rgba(127,29,29,0.3);border-radius:9999px;color:#f87171;font-size:11px;font-weight:500;display:flex;align-items:center;gap:6px;">
+                    <div style="width:8px;height:8px;background:#ef4444;border-radius:9999px;animation:pulse 2s infinite;"></div>
+                    AO VIVO
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main style="max-width:480px;margin:0 auto;">
+
+        <!-- HERO -->
+        <section class="hero-bg" style="padding:32px 24px 40px;text-align:center;">
+            <p style="color:#a1a1aa;font-size:18px;">
+                +48.000 arquivos • Conteúdo sem censura<br>
+                <span style="color:#ef4444;font-weight:500;">Atualizado 24h por dia</span>
+            </p>
+            
+            <div style="margin-top:32px;display:flex;justify-content:center;gap:32px;text-align:center;">
+                <div>
+                    <p style="font-size:28px;font-weight:700;color:#ef4444;">48k+</p>
+                    <p style="font-size:11px;color:#71717a;">ARQUIVOS</p>
+                </div>
+                <div>
+                    <p style="font-size:28px;font-weight:700;color:#ef4444;">9.2k</p>
+                    <p style="font-size:11px;color:#71717a;">MEMBROS</p>
+                </div>
+                <div>
+                    <p style="font-size:28px;font-weight:700;color:#ef4444;">24h</p>
+                    <p style="font-size:11px;color:#71717a;">ATUALIZAÇÃO</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIDEOS -->
+        <section style="padding:0 16px;margin-top:-24px;">
+            <div style="display:flex;gap:16px;overflow-x:auto;padding-bottom:24px;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;" class="scrollbar-hide">
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/05.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/04.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/06.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/09.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/12.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/13.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/14.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/15.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+                <div style="flex:none;width:288px;scroll-snap-align:center;">
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/07.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- OFERTA COM TELEGRAM -->
+        <div style="padding:0 24px;margin-top:16px;">
+            <div style="background:linear-gradient(135deg,#09090b,#000000);border:1px solid #991b1b;border-radius:24px;padding:24px;text-align:center;">
+                <p style="text-transform:uppercase;color:#ef4444;font-size:13px;font-weight:700;letter-spacing:0.1em;margin-bottom:8px;">ACESSO EXCLUSIVO</p>
+                
+                <!-- BADGE TELEGRAM -->
+                <div style="display:flex;justify-content:center;">
+                    <div class="telegram-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#4fc3f7"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                        <span>Acesso via Telegram</span>
+                    </div>
+                </div>
+
+                <h2 style="font-size:22px;font-weight:900;margin-bottom:8px;">Entre agora no grupo mais<br>protegido da internet</h2>
+
+                <!-- AVISO TELEGRAM -->
+                <div class="telegram-required">
+                    <span style="font-size:20px;">📲</span>
+                    <div>
+                        <strong>É necessário ter o Telegram instalado</strong><br>
+                        <span style="font-size:12px;color:#90a4ae;">Clique no botão para entrar no canal exclusivo</span>
+                    </div>
+                </div>
+                
+                <a href="#" onclick="window.redirectWithParams(); return false;" class="btn-telegram" style="display:block;width:100%;background:linear-gradient(90deg,#0088cc,#00aaff);padding:20px;border-radius:16px;font-size:18px;font-weight:700;color:#ffffff;text-decoration:none;text-align:center;cursor:pointer;border:none;transition:0.3s;margin-top:16px;">
+                    ENTRAR NO GRUPO AGORA
+                </a>
+                
+                <p style="font-size:11px;color:#71717a;margin-top:16px;">✅ Acesso instantâneo • ✅ Link privado • ✅ Sem propagandas</p>
+                <p style="font-size:10px;color:#4fc3f7;margin-top:6px;">🔐 Apenas usuários com Telegram conseguem acessar</p>
+            </div>
+        </div>
+
+        <!-- DIFERENCIAIS -->
+        <section style="padding:0 24px;margin-top:48px;">
+            <h3 style="text-align:center;color:#a1a1aa;margin-bottom:24px;font-weight:500;">POR QUE O Daark Kwai É DIFERENTE?</h3>
+            
+            <div style="display:flex;flex-direction:column;gap:24px;">
+                <div style="display:flex;gap:20px;">
+                    <div style="font-size:36px;">🔥</div>
+                    <div>
+                        <p style="font-weight:700;">Conteúdo Fresco</p>
+                        <p style="font-size:14px;color:#a1a1aa;">Novos vazamentos todos os dias. Sem repetição.</p>
+                    </div>
+                </div>
+                <div style="display:flex;gap:20px;">
+                    <div style="font-size:36px;">🛡️</div>
+                    <div>
+                        <p style="font-weight:700;">Grupo Fechado</p>
+                        <p style="font-size:14px;color:#a1a1aa;">Apenas membros aprovados. Máxima privacidade.</p>
+                    </div>
+                </div>
+                <div style="display:flex;gap:20px;">
+                    <div style="font-size:36px;">📂</div>
+                    <div>
+                        <p style="font-weight:700;">+48 Mil Arquivos</p>
+                        <p style="font-size:14px;color:#a1a1aa;">Organizados por categoria e qualidade.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOTÃO INFERIOR -->
+        <div style="padding:0 24px;margin-top:56px;margin-bottom:24px;">
+            <a href="#" onclick="window.redirectWithParams(); return false;" class="btn-white-telegram" style="display:block;width:100%;background:#ffffff;color:#000000;font-weight:700;padding:24px;border-radius:24px;text-align:center;font-size:18px;text-decoration:none;cursor:pointer;transition:0.3s;border:none;">
+                ENTRAR NO Daark Kwai AGORA →
+            </a>
+        </div>
+
+    </main>
+
+    <footer style="text-align:center;padding:40px 0;color:#52525b;font-size:11px;">
+        <p>© 2026 PORNFLIX • Conteúdo apenas para maiores de 18 anos</p>
+    </footer>
+
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+
+</body>
+</html>
