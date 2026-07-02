@@ -4,24 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <meta name="robots" content="noindex, nofollow">
-    <title>Exclusivo XXDD</title>
+    <title>XXDD</title>
     
     <!-- ==================== PIXEL UTMIFY ==================== -->
-      <script>
-  window.kwaiPixelId = "6a457efd214d98f46849e612";
-  var a = document.createElement("script");
-  a.setAttribute("async", "");
-  a.setAttribute("defer", "");
-  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-kwai.js");
-  document.head.appendChild(a);
-</script>
+    <script>
+        window.kwaiPixelId = "6a457efd214d98f46849e612";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-kwai.js");
+        document.head.appendChild(a);
+    </script>
+
     <!-- ==================== PRESSEL - CAPTURA COMPLETA DE UTMs ==================== -->
     <script>
     (function() {
         // Captura todos os parâmetros da URL
         var urlParams = new URLSearchParams(window.location.search);
         
-        // Lista completa de parâmetros
         var paramKeys = [
             'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
             'utm_id', 'fbclid', 'gclid', 'click_id', 'kwai_click_id', 'msclkid',
@@ -33,7 +33,6 @@
         var capturedParams = {};
         var hasParams = false;
         
-        // Captura todos os parâmetros da URL
         paramKeys.forEach(function(key) {
             var value = urlParams.get(key);
             if (value) {
@@ -45,7 +44,6 @@
         // ==================== RECUPERA PARÂMETROS DO SESSIONSTORAGE ====================
         try {
             var savedParams = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
-            // Remove pixel_id para não conflitar
             if (savedParams.pixel_id) {
                 delete savedParams.pixel_id;
             }
@@ -64,7 +62,6 @@
         if (capturedParams.utm_content) {
             var parts = capturedParams.utm_content.split('::');
             if (parts.length === 3) {
-                // NÃO sobrescreve o pixel_id
                 if (!capturedParams.click_id && !capturedParams.kwai_click_id) {
                     capturedParams.click_id = parts[1];
                     hasParams = true;
@@ -106,36 +103,36 @@
             console.log('🔗 URL final:', buildRedirectUrl(DESTINATION_URL));
         }
         
-        // ==================== FUNÇÃO DE REDIRECIONAMENTO ====================
+        // ==================== 🔥 FUNÇÃO DE REDIRECIONAMENTO COM PageView ====================
         window.redirectWithParams = function() {
             console.log('🔄 Iniciando redirecionamento...');
             console.log('📌 Pixel ID:', window.kwaiPixelId);
             
-            // 🔥 DISPARA O EVENTO CONTENT VIEW
+            // 🔥 DISPARA O EVENTO PageView SOMENTE AQUI (no clique)
             if (typeof window.kwaiPixel !== 'undefined') {
                 try {
-                    window.kwaiPixel('track', 'ViewContent', {
+                    window.kwaiPixel('track', 'PageView', {
                         content_name: 'Acesso Exclusivo Telegram',
                         content_category: 'Conteúdo Premium',
                         value: 0.01,
                         currency: 'BRL'
                     });
-                    console.log('✅ Evento ViewContent disparado para o pixel:', window.kwaiPixelId);
+                    console.log('✅ Evento PageView disparado para o pixel:', window.kwaiPixelId);
                 } catch(e) {
-                    console.log('⚠️ Erro ao disparar evento:', e);
+                    console.log('⚠️ Erro ao disparar evento PageView:', e);
                 }
             } else {
                 console.log('❌ window.kwaiPixel não disponível');
                 // Fallback
                 if (typeof window.utmify !== 'undefined') {
                     try {
-                        window.utmify('track', 'ViewContent');
-                        console.log('✅ Evento disparado via UTMify fallback');
+                        window.utmify('track', 'PageView');
+                        console.log('✅ Evento PageView disparado via UTMify fallback');
                     } catch(e) {}
                 }
             }
             
-            // Redireciona
+            // Redireciona após pequeno delay
             setTimeout(function() {
                 var currentUrl = buildRedirectUrl(DESTINATION_URL);
                 console.log('🔗 Redirecionando para:', currentUrl);
@@ -146,6 +143,9 @@
     </script>
     <!-- ==================== FIM DO SCRIPT PRESSEL ==================== -->
 
+    <!-- ============================================================
+    TODO O SEU CSS E HTML PERMANECE IGUAL
+    ============================================================ -->
     <style>
         /* ============================================================
                    RESET E CONFIGURAÇÕES GLOBAIS
