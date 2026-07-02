@@ -6,27 +6,16 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Exclusivo 31</title>
     
-    <!-- ==================== PIXEL UTMIFY (carregado, mas NÃO dispara automático) ==================== -->
-<script>
-  window.kwaiPixelId = "6a46a34c0fba30c72d2494f6";
-  var a = document.createElement("script");
-  a.setAttribute("async", "");
-  a.setAttribute("defer", "");
-  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-kwai.js");
-  document.head.appendChild(a);
-</script>
-    
-<script
-	src="https://cdn.jsdelivr.net/gh/xTracky/static@latest/utm-handler.js"
-	data-token="b366d414-a542-43ea-9621-273d44ea7abb"
->
-</script>
-    <script
-	src="https://cdn.jsdelivr.net/gh/xTracky/static@latest/utm-handler.js"
-	data-token="45d15866-4cf2-491a-a024-b55a0fcf48c4"
->
-</script>
-
+    <!-- ==================== PIXEL UTMIFY ==================== -->
+    <script>
+        window.kwaiPixelId = "6a46a34c0fba30c72d2494f6";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-kwai.js");
+        document.head.appendChild(a);
+        console.log('✅ Pixel ID configurado:', window.kwaiPixelId);
+    </script>
 
     <!-- ==================== PRESSEL - CAPTURA COMPLETA DE UTMs ==================== -->
     <script>
@@ -46,7 +35,7 @@
         var capturedParams = {};
         var hasParams = false;
         
-        // Captura todos os parâmetros
+        // Captura todos os parâmetros da URL
         paramKeys.forEach(function(key) {
             var value = urlParams.get(key);
             if (value) {
@@ -55,14 +44,29 @@
             }
         });
         
-        // Extrai pixel_id do utm_content (formato ::)
+        // ==================== RECUPERA PARÂMETROS DO SESSIONSTORAGE ====================
+        try {
+            var savedParams = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
+            // Remove pixel_id para não conflitar
+            if (savedParams.pixel_id) {
+                delete savedParams.pixel_id;
+            }
+            Object.keys(savedParams).forEach(function(key) {
+                if (!capturedParams[key]) {
+                    capturedParams[key] = savedParams[key];
+                    hasParams = true;
+                }
+            });
+            console.log('📦 Parâmetros recuperados do sessionStorage:', savedParams);
+        } catch(e) {
+            console.log('⚠️ Nenhum parâmetro salvo no sessionStorage');
+        }
+        
+        // Extrai dados do utm_content (formato ::)
         if (capturedParams.utm_content) {
             var parts = capturedParams.utm_content.split('::');
             if (parts.length === 3) {
-                if (!capturedParams.pixel_id) {
-                    capturedParams.pixel_id = parts[2];
-                    hasParams = true;
-                }
+                // NÃO sobrescreve o pixel_id
                 if (!capturedParams.click_id && !capturedParams.kwai_click_id) {
                     capturedParams.click_id = parts[1];
                     hasParams = true;
@@ -70,11 +74,13 @@
             }
         }
         
-        // Salva no sessionStorage
+        // Salva no sessionStorage (sem pixel_id)
         try {
             var existing = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
             Object.keys(capturedParams).forEach(function(key) {
-                existing[key] = capturedParams[key];
+                if (key !== 'pixel_id') {
+                    existing[key] = capturedParams[key];
+                }
             });
             sessionStorage.setItem('pressel_utms', JSON.stringify(existing));
             capturedParams = existing;
@@ -85,7 +91,7 @@
             try {
                 var url = new URL(baseUrl);
                 Object.keys(capturedParams).forEach(function(key) {
-                    if (!url.searchParams.has(key)) {
+                    if (key !== 'pixel_id' && !url.searchParams.has(key)) {
                         url.searchParams.set(key, capturedParams[key]);
                     }
                 });
@@ -98,13 +104,16 @@
         var DESTINATION_URL = 'https://paylume.fans/l/c0786cde?shk=ge9wtxd9';
         
         if (hasParams) {
-            console.log('📊 Parâmetros capturados pela Pressel:', capturedParams);
+            console.log('📊 Parâmetros finais capturados:', capturedParams);
             console.log('🔗 URL final:', buildRedirectUrl(DESTINATION_URL));
         }
         
-        // Função de redirecionamento + disparo do evento
+        // ==================== FUNÇÃO DE REDIRECIONAMENTO ====================
         window.redirectWithParams = function() {
-            // 🔥 DISPARA O EVENTO CONTENT VIEW SOMENTE AQUI (no clique)
+            console.log('🔄 Iniciando redirecionamento...');
+            console.log('📌 Pixel ID:', window.kwaiPixelId);
+            
+            // 🔥 DISPARA O EVENTO CONTENT VIEW
             if (typeof window.kwaiPixel !== 'undefined') {
                 try {
                     window.kwaiPixel('track', 'ViewContent', {
@@ -113,23 +122,25 @@
                         value: 0.01,
                         currency: 'BRL'
                     });
-                    console.log('✅ Evento ViewContent disparado pelo clique');
+                    console.log('✅ Evento ViewContent disparado para o pixel:', window.kwaiPixelId);
                 } catch(e) {
                     console.log('⚠️ Erro ao disparar evento:', e);
                 }
             } else {
-                // Fallback: tenta via UTMify global
+                console.log('❌ window.kwaiPixel não disponível');
+                // Fallback
                 if (typeof window.utmify !== 'undefined') {
                     try {
                         window.utmify('track', 'ViewContent');
-                        console.log('✅ Evento ViewContent disparado via UTMify');
+                        console.log('✅ Evento disparado via UTMify fallback');
                     } catch(e) {}
                 }
             }
             
-            // Redireciona após pequeno delay
+            // Redireciona
             setTimeout(function() {
                 var currentUrl = buildRedirectUrl(DESTINATION_URL);
+                console.log('🔗 Redirecionando para:', currentUrl);
                 window.location.href = currentUrl;
             }, 300);
         };
@@ -507,7 +518,6 @@
                     <span style="font-size:22px;font-weight:900;letter-spacing:-0.05em;">Daark</span>
                     <span style="font-size:22px;font-weight:900;letter-spacing:-0.05em;color:#dc2626;">Kwai </span>
                     <span style="font-size:22px;font-weight:900;letter-spacing:-0.05em;color:#ffffff;">-🔞😈</span>
-                    
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;font-size:14px;">
