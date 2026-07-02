@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <meta name="robots" content="noindex, nofollow">
     <title>Exclusivo</title>
+    
+    <!-- ==================== PIXEL UTMIFY (carregado, mas NÃO dispara automático) ==================== -->
+    <script>
+        window.kwaiPixelId = "6a4180ad5ca7593908dda95b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-kwai.js");
+        document.head.appendChild(a);
+    </script>
 
     <!-- ==================== PRESSEL - CAPTURA COMPLETA DE UTMs ==================== -->
     <script>
@@ -73,7 +83,7 @@
             }
         }
         
-        var DESTINATION_URL = 'https://t.me/DaarkVazados1_bot?start=nv';
+        var DESTINATION_URL = 'https://t.me/DaarkVazados1_bot?start=';
         
         if (hasParams) {
             console.log('📊 Parâmetros capturados pela Pressel:', capturedParams);
@@ -116,6 +126,9 @@
     <!-- ==================== FIM DO SCRIPT PRESSEL ==================== -->
 
     <style>
+        /* ============================================================
+                   RESET E CONFIGURAÇÕES GLOBAIS
+                   ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -128,22 +141,33 @@
             color: #ffffff;
         }
         
+        /* ============================================================
+                   FUNDO DO HERO
+                   ============================================================ */
         .hero-bg {
             background: linear-gradient(180deg, #0a0a0a, #1a0000);
         }
         
+        /* ============================================================
+                   EFEITO HOVER DOS CARDS DE VÍDEO
+                   ============================================================ */
         .card-hover:hover {
             transform: translateY(-8px);
             box-shadow: 0 0 40px rgba(185, 28, 28, 0.4);
         }
 
-        /* Container do carousel com indicadores */
+        /* ============================================================
+                   CAROUSEL - CONTAINER PRINCIPAL
+                   ============================================================ */
         .carousel-wrapper {
             position: relative;
             padding: 0 16px;
             margin-top: -24px;
         }
 
+        /* ============================================================
+                   CAROUSEL - ROLAGEM HORIZONTAL
+                   ============================================================ */
         .carousel-container {
             display: flex;
             gap: 16px;
@@ -155,7 +179,9 @@
             scroll-behavior: smooth;
         }
 
-        /* Barra de rolagem estilizada */
+        /* ============================================================
+                   CAROUSEL - BARRA DE ROLAGEM PERSONALIZADA
+                   ============================================================ */
         .carousel-container::-webkit-scrollbar {
             height: 8px;
         }
@@ -174,13 +200,100 @@
             background: linear-gradient(90deg, #ef4444, #dc2626);
         }
 
+        /* ============================================================
+                   CAROUSEL - CADA ITEM (VÍDEO)
+                   ============================================================ */
         .carousel-item {
             flex: none;
             width: 288px;
             scroll-snap-align: center;
+            position: relative;
         }
 
-        /* SETA INDICADORA - DIREITA */
+        /* ============================================================
+                   VÍDEOS - EFEITO BLUR + BRILHO
+                   ============================================================ */
+        .carousel-item video {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            filter: blur(12px) brightness(0.7);
+            transition: filter 0.5s ease, transform 0.3s ease;
+            transform: scale(1.02);
+        }
+
+        /* Ao passar o mouse, diminui o blur */
+        .carousel-item:hover video {
+            filter: blur(6px) brightness(0.8);
+            transform: scale(1);
+        }
+
+        /* Ao clicar no vídeo, tira o blur */
+        .carousel-item video:focus {
+            filter: blur(0px) brightness(1);
+        }
+
+        /* ============================================================
+                   OVERLAY - TEXTO "CONTEÚDO SENSÍVEL" SOBRE OS VÍDEOS
+                   ============================================================ */
+        .video-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 18px;
+            border-radius: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+            transition: all 0.5s ease;
+            line-height: 1.3;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Ao passar o mouse, overlay fica mais transparente */
+        .carousel-item:hover .video-overlay {
+            opacity: 0.5;
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        /* Emoji de cima (🔞) */
+        .video-overlay .emoji-top {
+            display: block;
+            font-size: 28px;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        /* Texto principal "CONTEÚDO SENSÍVEL" */
+        .video-overlay .text-main {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Emoji de baixo (😈) */
+        .video-overlay .emoji-bottom {
+            display: block;
+            font-size: 20px;
+            margin-top: 1px;
+            line-height: 1;
+        }
+
+        /* ============================================================
+                   SETAS DE NAVEGAÇÃO DO CAROUSEL
+                   ============================================================ */
+        
+        /* Seta DIREITA (sempre visível) */
         .scroll-indicator-right {
             position: absolute;
             right: 8px;
@@ -209,7 +322,7 @@
             transform: translateY(-50%) scale(1.1);
         }
 
-        /* SETA INDICADORA - ESQUERDA (aparece quando rola) */
+        /* Seta ESQUERDA (aparece só quando rola) */
         .scroll-indicator-left {
             position: absolute;
             left: 8px;
@@ -241,7 +354,9 @@
             display: flex;
         }
 
-        /* TEXTO INDICADOR "ARRASTE PARA O LADO" */
+        /* ============================================================
+                   TEXTO "ARRASTE PARA O LADO"
+                   ============================================================ */
         .drag-hint {
             text-align: center;
             color: #71717a;
@@ -257,6 +372,9 @@
             animation: handMove 1.5s infinite;
         }
 
+        /* ============================================================
+                   ANIMAÇÕES
+                   ============================================================ */
         @keyframes bounceRight {
             0%, 100% { transform: translateY(-50%) translateX(0); }
             50% { transform: translateY(-50%) translateX(6px); }
@@ -272,6 +390,14 @@
             50% { transform: translateX(6px); }
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ============================================================
+                   BADGE TELEGRAM
+                   ============================================================ */
         .telegram-badge {
             display: inline-flex;
             align-items: center;
@@ -285,6 +411,9 @@
             margin-top: 8px;
         }
 
+        /* ============================================================
+                   AVISO "É NECESSÁRIO TER TELEGRAM"
+                   ============================================================ */
         .telegram-required {
             background: rgba(0, 136, 204, 0.08);
             border-left: 3px solid #0088cc;
@@ -303,6 +432,9 @@
             color: #4fc3f7;
         }
 
+        /* ============================================================
+                   BOTÕES DE AÇÃO
+                   ============================================================ */
         .btn-telegram {
             background: linear-gradient(90deg, #0088cc, #00aaff);
             transition: 0.3s;
@@ -321,15 +453,40 @@
             content: ' 📱';
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        /* ============================================================
+                   RESPONSIVO - TELAS PEQUENAS (CELULAR)
+                   ============================================================ */
+        @media (max-width: 480px) {
+            .carousel-item video {
+                height: 260px;
+                filter: blur(10px) brightness(0.6);
+            }
+            .carousel-item:hover video {
+                filter: blur(5px) brightness(0.7);
+            }
+            .video-overlay {
+                padding: 8px 14px;
+                border-radius: 20px;
+                font-size: 12px;
+            }
+            .video-overlay .emoji-top {
+                font-size: 24px;
+            }
+            .video-overlay .emoji-bottom {
+                font-size: 18px;
+            }
+            .video-overlay .text-main {
+                font-size: 11px;
+                letter-spacing: 1.5px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- ============================================================
+    HEADER - TOPO DA PÁGINA
+    ============================================================ -->
     <header style="position:sticky;top:0;z-index:50;background:rgba(0,0,0,0.9);backdrop-filter:blur(16px);border-bottom:1px solid #3b0a0a;padding:12px 0;">
         <div style="max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;">
             <div style="display:flex;align-items:center;gap:12px;">
@@ -350,7 +507,9 @@
 
     <main style="max-width:480px;margin:0 auto;">
 
-        <!-- HERO -->
+        <!-- ============================================================
+        HERO - ESTATÍSTICAS
+        ============================================================ -->
         <section class="hero-bg" style="padding:32px 24px 40px;text-align:center;">
             <p style="color:#a1a1aa;font-size:18px;">
                 +48.000 arquivos • Conteúdo sem censura<br>
@@ -363,7 +522,7 @@
                     <p style="font-size:11px;color:#71717a;">ARQUIVOS</p>
                 </div>
                 <div>
-                    <p style="font-size:28px;font-weight:700;color:#ef4444;">9.2k</p>
+                    <p style="font-size:28px;font-weight:700;color:#ef4444;">15.2k</p>
                     <p style="font-size:11px;color:#71717a;">MEMBROS</p>
                 </div>
                 <div>
@@ -373,7 +532,9 @@
             </div>
         </section>
 
-        <!-- VIDEOS COM INDICADORES DE ROLAGEM -->
+        <!-- ============================================================
+        CAROUSEL DE VÍDEOS COM OVERLAY "CONTEÚDO SENSÍVEL"
+        ============================================================ -->
         <div class="carousel-wrapper">
             <!-- TEXTO INDICADOR -->
             <div class="drag-hint">
@@ -387,51 +548,115 @@
 
             <!-- CAROUSEL -->
             <div class="carousel-container" id="carouselContainer">
+                
+                <!-- VÍDEO 1 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/05.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/05.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VÍDEO 2 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/04.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/04.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VÍDEO 3 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/06.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/06.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VÍDEO 4 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/09.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/09.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VÍDEO 5 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/12.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/12.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VÍDEO 6 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/13.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/13.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VÍDEO 7 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/14.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/14.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VÍDEO 8 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/15.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/15.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VÍDEO 9 -->
                 <div class="carousel-item">
-                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;" class="card-hover">
-                        <video src="https://guiadosbeneficiarios.com/07.mp4" muted loop autoplay playsinline style="width:100%;height:320px;object-fit:cover;"></video>
+                    <div style="border-radius:24px;overflow:hidden;border:1px solid rgba(127,29,29,0.5);transition:0.3s;position:relative;" class="card-hover">
+                        <video src="https://guiadosbeneficiarios.com/07.mp4" muted loop autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <span class="emoji-top">🔞</span>
+                            <span class="text-main">CONTEÚDO SENSÍVEL</span>
+                            <span class="emoji-bottom">😈</span>
+                        </div>
                     </div>
                 </div>
+
             </div>
 
             <!-- SETA DIREITA (sempre visível) -->
@@ -440,7 +665,9 @@
             </div>
         </div>
 
-        <!-- OFERTA COM TELEGRAM -->
+        <!-- ============================================================
+        OFERTA COM TELEGRAM
+        ============================================================ -->
         <div style="padding:0 24px;margin-top:16px;">
             <div style="background:linear-gradient(135deg,#09090b,#000000);border:1px solid #991b1b;border-radius:24px;padding:24px;text-align:center;">
                 <p style="text-transform:uppercase;color:#ef4444;font-size:13px;font-weight:700;letter-spacing:0.1em;margin-bottom:8px;">ACESSO EXCLUSIVO</p>
@@ -473,7 +700,9 @@
             </div>
         </div>
 
-        <!-- DIFERENCIAIS -->
+        <!-- ============================================================
+        DIFERENCIAIS
+        ============================================================ -->
         <section style="padding:0 24px;margin-top:48px;">
             <h3 style="text-align:center;color:#a1a1aa;margin-bottom:24px;font-weight:500;">POR QUE O Daark Kwai É DIFERENTE?</h3>
             
@@ -502,7 +731,9 @@
             </div>
         </section>
 
-        <!-- BOTÃO INFERIOR -->
+        <!-- ============================================================
+        BOTÃO INFERIOR
+        ============================================================ -->
         <div style="padding:0 24px;margin-top:56px;margin-bottom:24px;">
             <a href="#" onclick="window.redirectWithParams(); return false;" class="btn-white-telegram" style="display:block;width:100%;background:#ffffff;color:#000000;font-weight:700;padding:24px;border-radius:24px;text-align:center;font-size:18px;text-decoration:none;cursor:pointer;transition:0.3s;border:none;">
                 ENTRAR NO Daark Kwai AGORA →
@@ -511,34 +742,49 @@
 
     </main>
 
+    <!-- ============================================================
+    RODAPÉ
+    ============================================================ -->
     <footer style="text-align:center;padding:40px 0;color:#52525b;font-size:11px;">
         <p>© 2026 Daark Kwai • Conteúdo apenas para maiores de 18 anos</p>
     </footer>
 
+    <!-- ============================================================
+    JAVASCRIPT - CONTROLE DO CAROUSEL
+    ============================================================ -->
     <script>
-        // Controle das setas e indicadores de rolagem
+        // ============================================================
+        // CONTROLE DAS SETAS E INDICADORES DE ROLAGEM
+        // ============================================================
+        
+        // Pega os elementos do DOM
         const container = document.getElementById('carouselContainer');
         const leftArrow = document.getElementById('scrollLeft');
         const rightArrow = document.getElementById('scrollRight');
 
-        // Função para rolar o carousel
+        // ============================================================
+        // FUNÇÃO PARA ROLAR O CAROUSEL
+        // ============================================================
         function scrollCarousel(direction) {
-            const scrollAmount = 304; // Largura do item + gap
+            const scrollAmount = 304; // Largura do item (288px) + gap (16px)
             container.scrollBy({
                 left: direction * scrollAmount,
                 behavior: 'smooth'
             });
         }
 
-        // Verifica se deve mostrar a seta esquerda
+        // ============================================================
+        // VERIFICA SE DEVE MOSTRAR A SETA ESQUERDA
+        // ============================================================
         function checkScroll() {
+            // Se rolou mais de 20px para a direita, mostra a seta esquerda
             if (container.scrollLeft > 20) {
                 leftArrow.classList.add('show');
             } else {
                 leftArrow.classList.remove('show');
             }
 
-            // Esconde a seta direita se chegou no fim
+            // Se chegou no fim, desativa a seta direita
             if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
                 rightArrow.style.opacity = '0.3';
                 rightArrow.style.cursor = 'default';
@@ -548,16 +794,16 @@
             }
         }
 
-        // Verifica ao rolar
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
         container.addEventListener('scroll', checkScroll);
-
-        // Verifica ao carregar
+        window.addEventListener('resize', checkScroll);
         setTimeout(checkScroll, 100);
 
-        // Também verifica ao redimensionar
-        window.addEventListener('resize', checkScroll);
-
-        // Fecha o texto indicador depois de alguns segundos ou quando o usuário interagir
+        // ============================================================
+        // ESCONDE O TEXTO "ARRASTE PARA O LADO" APÓS 6 SEGUNDOS
+        // ============================================================
         setTimeout(() => {
             const hint = document.querySelector('.drag-hint');
             if (hint) {
