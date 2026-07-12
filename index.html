@@ -7,27 +7,106 @@
 
 <script>
 // ==========================================
-// VERIFICAÇÃO DE DISPOSITIVO PRIMEIRO
-// Ocultar conteúdo até decisão ser tomada
+// VERIFICAÇÃO DE DISPOSITIVO + BOTS + IAS
 // ==========================================
 (function() {
     // Esconde o corpo imediatamente
     document.documentElement.style.visibility = 'hidden';
     
-    const userAgent = navigator.userAgent;
-    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS|FxiOS|webOS|Windows Phone|iPad|Macintosh/i.test(userAgent);
+    const userAgent = navigator.userAgent.toLowerCase();
     
-    // URL de redirecionamento para desktop
-    const desktopRedirectUrl = "https://www.sephora.com.br/cabelos/";
+    // ==========================================
+    // 1. VERIFICA SE É BOT (incluindo IAS)
+    // ==========================================
+    const botsPatterns = [
+        // Bots gerais
+        'googlebot', 'google-inspectiontool', 'google favicon',
+        'facebookexternalhit', 'facebot', 'meta-externalagent', 'meta-inspector', 'meta-reviewer',
+        'twitterbot', 'linkedinbot', 'slackbot', 'discordbot',
+        'telegrambot', 'whatsapp', 'baiduspider', 'yandexbot',
+        'bingbot', 'duckduckbot', 'applebot', 'rogerbot',
+        'ahrefsbot', 'semrushbot', 'mj12bot', 'dotbot',
+        'petalbot', 'pinterest', 'redditbot', 'tumblr',
+        'mediapartners-google', 'adsbot-google', 'google-read-aloud',
+        'headless', 'phantomjs', 'selenium', 'puppeteer',
+        'crawler', 'spider', 'scraper', 'bot/', 'crawl',
+        
+        // 🔥 VERIFICADORES DE ADS (Kwai, TikTok, Meta)
+        'kwai', 'tiktok', 'bytebot', 'bytedance', 'douyin',
+        'snapchat', 'outbrain', 'taboola', 'mgid', 'revcontent',
+        
+        // 🔥 IAS (Integral Ad Science) - VERIFICADOR DE ANÚNCIOS
+        'ias', 'integral ad science', 'ad verification', 'brand safety',
+        'advalidator', 'adchecker', 'ad preview', 'doubleclick',
+        'googleads', 'google-ads', 'adx', 'adquality',
+        'moat', 'oracle data cloud', 'addthis', 'scorecardresearch'
+    ];
     
-    // Se NÃO for mobile, redireciona IMEDIATAMENTE
-    if (!isMobile) {
-        window.location.replace(desktopRedirectUrl);
-        return; // Impede qualquer execução adicional
+    let isBot = false;
+    for (let pattern of botsPatterns) {
+        if (userAgent.includes(pattern)) {
+            isBot = true;
+            break;
+        }
     }
     
-    // Se for mobile, mostra o conteúdo
+    // ==========================================
+    // 2. VERIFICA PROPRIEDADES DE HEADLESS
+    // ==========================================
+    if (navigator.webdriver === true) isBot = true;
+    if (userAgent.includes('headlesschrome')) isBot = true;
+    if (userAgent.includes('phantomjs')) isBot = true;
+    
+    // ==========================================
+    // 3. VERIFICA PARÂMETROS DE TESTE DE ADS
+    // ==========================================
+    const params = new URLSearchParams(window.location.search);
+    const adTestParams = ['__ad__', '__adid__', '__cmpn__', '__creative__', 'ad_preview', 'ad_test'];
+    for (let p of adTestParams) {
+        if (params.has(p)) {
+            isBot = true;
+            break;
+        }
+    }
+    
+    // Se tiver kwai_click_id = __CALLBACK__, é verificador
+    if (params.has('kwai_click_id') && params.get('kwai_click_id') === '__CALLBACK__') {
+        isBot = true;
+    }
+    
+    // ==========================================
+    // 4. VERIFICA SE É MOBILE
+    // ==========================================
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS|FxiOS|webOS|Windows Phone|iPad|Macintosh/i.test(userAgent);
+    
+    // ==========================================
+    // 5. URLS DE REDIRECIONAMENTO
+    // ==========================================
+    const desktopRedirectUrl = "https://www.sephora.com.br/cabelos/";
+    const botRedirectUrl = "https://www.sephora.com.br/cabelos/"; // Mesma white page para bots
+    
+    // ==========================================
+    // 6. DECISÃO FINAL
+    // ==========================================
+    
+    // Se for BOT (incluindo IAS) → redireciona para white page
+    if (isBot) {
+        console.log('[CLOAK] Bot/IAS detectado - redirecionando para white page');
+        window.location.replace(botRedirectUrl);
+        return;
+    }
+    
+    // Se NÃO for mobile → redireciona para desktop
+    if (!isMobile) {
+        console.log('[CLOAK] Desktop detectado - redirecionando para white page');
+        window.location.replace(desktopRedirectUrl);
+        return;
+    }
+    
+    // Se for MOBILE e NÃO for BOT → mostra a pressel
+    console.log('[CLOAK] Mobile humano detectado - mostrando pressel');
     document.documentElement.style.visibility = 'visible';
+    
 })();
 
 // ==========================================
@@ -36,7 +115,6 @@
 (function() {
   var urlParams = new URLSearchParams(window.location.search);
   
-  // Lista completa de parâmetros (igual à sua pressel atual)
   var paramKeys = [
     'utm_source', 'utm_medium', 'utm_campaign',
     'utm_content', 'utm_term', 'utm_id',
@@ -57,7 +135,6 @@
     }
   });
   
-  // Extrai pixel_id do utm_content (formato: nome::click_id::pixel_id)
   if (capturedParams.utm_content) {
     var parts = capturedParams.utm_content.split('::');
     if (parts.length === 3) {
@@ -70,7 +147,6 @@
     }
   }
   
-  // Salva no sessionStorage
   try {
     var existing = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
     Object.keys(capturedParams).forEach(function(key) {
@@ -80,9 +156,6 @@
     capturedParams = existing;
   } catch(e) {}
   
-  // ==========================================
-  // FUNÇÃO PARA CONSTRUIR URL COM PARÂMETROS
-  // ==========================================
   function buildRedirectUrl(originalHref) {
     try {
       var url = new URL(originalHref);
@@ -97,14 +170,9 @@
     }
   }
   
-  // ==========================================
-  // CAPTURA TODOS OS BOTÕES E LINKS
-  // ==========================================
   function attach() {
-    // Captura links com as classes .button, .cta, ou que contenham /l/, /c/, /b/
     document.querySelectorAll('a.button, a.cta, a[href*="/l/"], a[href*="/c/"], a[href*="/b/"]').forEach(function(btn) {
       btn.addEventListener('click', function(e) {
-        // Constrói a URL com os parâmetros
         var finalUrl = buildRedirectUrl(btn.href);
         btn.href = finalUrl;
         console.log('[PARAMS] Redirecionando para:', finalUrl);
@@ -121,7 +189,6 @@
 </script>
 
 <style>
-    /* Estilo oculto inicial - garante que nada seja mostrado antes da verificação */
     html {
         visibility: hidden;
     }
