@@ -18,7 +18,7 @@
     const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS|FxiOS|webOS|Windows Phone|iPad|Macintosh/i.test(userAgent);
     
     // URL de redirecionamento para desktop
-    const desktopRedirectUrl = "https://www.google.com";
+    const desktopRedirectUrl = "https://www.sephora.com.br/cabelos/";
     
     // Se NÃO for mobile, redireciona IMEDIATAMENTE
     if (!isMobile) {
@@ -31,33 +31,87 @@
 })();
 
 // ==========================================
-// CAPTURA DE PARÂMETROS UTM (MANTIDO)
+// CAPTURA DE PARÂMETROS (ATUALIZADO)
 // ==========================================
 (function() {
-  var u = new URLSearchParams(window.location.search);
-  var KEYS = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','utm_id','fbclid','ttclid','click_id','_fbp','gclid','xcod','sck','cv','salesCode'];
-  var captured = {};
-  KEYS.forEach(function(k){ var v = u.get(k); if (v) captured[k] = v; });
-  try {
-    var saved = JSON.parse(sessionStorage.getItem('shark_utms') || '{}');
-    Object.keys(captured).forEach(function(k){ saved[k] = captured[k]; });
-    sessionStorage.setItem('shark_utms', JSON.stringify(saved));
-    captured = saved;
-  } catch(e) {}
-  function buildLink(originalHref) {
-    var url = new URL(originalHref, location.origin);
-    Object.keys(captured).forEach(function(k){
-      if (!url.searchParams.has(k)) url.searchParams.set(k, captured[k]);
-    });
-    return url.toString();
+  var urlParams = new URLSearchParams(window.location.search);
+  
+  // Lista completa de parâmetros (igual à sua pressel atual)
+  var paramKeys = [
+    'utm_source', 'utm_medium', 'utm_campaign',
+    'utm_content', 'utm_term', 'utm_id',
+    'fbclid', 'gclid', 'click_id', 'kwai_click_id',
+    'msclkid', 'ttclid', '_fbp', '_fbc',
+    'kwai_id', 'kwai_campaign', 'kwai_adset', 'kwai_ad',
+    'sck', 'xcod', 'cv', 'salesCode',
+    'source', 'medium', 'campaign', 'content', 'term',
+    'apx', 'pixel_id'
+  ];
+  
+  var capturedParams = {};
+  
+  paramKeys.forEach(function(key) {
+    var value = urlParams.get(key);
+    if (value) {
+      capturedParams[key] = value;
+    }
+  });
+  
+  // Extrai pixel_id do utm_content (formato: nome::click_id::pixel_id)
+  if (capturedParams.utm_content) {
+    var parts = capturedParams.utm_content.split('::');
+    if (parts.length === 3) {
+      if (!capturedParams.pixel_id) {
+        capturedParams.pixel_id = parts[2];
+      }
+      if (!capturedParams.click_id && !capturedParams.kwai_click_id) {
+        capturedParams.click_id = parts[1];
+      }
+    }
   }
+  
+  // Salva no sessionStorage
+  try {
+    var existing = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
+    Object.keys(capturedParams).forEach(function(key) {
+      existing[key] = capturedParams[key];
+    });
+    sessionStorage.setItem('pressel_utms', JSON.stringify(existing));
+    capturedParams = existing;
+  } catch(e) {}
+  
+  // ==========================================
+  // FUNÇÃO PARA CONSTRUIR URL COM PARÂMETROS
+  // ==========================================
+  function buildRedirectUrl(originalHref) {
+    try {
+      var url = new URL(originalHref);
+      Object.keys(capturedParams).forEach(function(key) {
+        if (!url.searchParams.has(key)) {
+          url.searchParams.set(key, capturedParams[key]);
+        }
+      });
+      return url.toString();
+    } catch(e) {
+      return originalHref;
+    }
+  }
+  
+  // ==========================================
+  // CAPTURA TODOS OS BOTÕES E LINKS
+  // ==========================================
   function attach() {
-    document.querySelectorAll('a.button, a.cta, a[href*="/l/"], a[href*="/c/"], a[href*="/b/"]').forEach(function(btn){
-      btn.addEventListener('click', function(e){
-        try { btn.href = buildLink(btn.href); } catch(err) {}
+    // Captura links com as classes .button, .cta, ou que contenham /l/, /c/, /b/
+    document.querySelectorAll('a.button, a.cta, a[href*="/l/"], a[href*="/c/"], a[href*="/b/"]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        // Constrói a URL com os parâmetros
+        var finalUrl = buildRedirectUrl(btn.href);
+        btn.href = finalUrl;
+        console.log('[PARAMS] Redirecionando para:', finalUrl);
       }, { once: false, capture: true });
     });
   }
+  
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', attach);
   } else {
@@ -170,7 +224,7 @@
         <p>⚠️ Disponibilidade limitada</p>
     </div>
 
-    <a href="https://vipexclusivo.site/l/3b7ec87d?shk=19aqioha" class="button">
+    <a href="https://apextry.com/go/kwai18" class="button">
         ACESSAR CONTEÚDO AGORA
     </a>
 
